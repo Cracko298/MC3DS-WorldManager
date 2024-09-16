@@ -9,7 +9,7 @@ endif
 TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
 
-NAME := Minecraft-3DS-FWO
+NAME := 3DSWorld2FWO_Console
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -40,7 +40,10 @@ DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	gfx
 GFXBUILD	:=	$(BUILD)
-NO_SMDH := anything
+APP_AUTHOR  := Cracko298
+ICON := icon.png
+APP_DESCRIPTION := Enables Converting Worlds to FWO Worlds.
+APP_NAME := 3DSWorld2FWO_Console
 #ROMFS		:=	romfs
 #GFXBUILD	:=	$(ROMFS)/gfx
 
@@ -160,9 +163,6 @@ endif
 ifneq ($(ROMFS),)
 	export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
 endif
-
-.PHONY: all clean
-
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
@@ -230,6 +230,3 @@ $(OUTPUT).elf	:	$(OFILES)
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
-
-DESCRIPTION := Checks the region of Minecraft installed on your Console, and generates a file that can be used to direct applications to The Correct Luma3DS Folder.
-AUTHOR := Cracko298

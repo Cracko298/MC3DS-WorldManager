@@ -82,24 +82,7 @@ main.o: C:/Users/batch_kl6edmc/Downloads/mc3ds_3dsfwo/source/main.c \
  G:/devkitPro/libctru/include/3ds/romfs.h \
  G:/devkitPro/libctru/include/3ds/font.h \
  G:/devkitPro/libctru/include/3ds/gdbhio_dev.h \
- G:/devkitPro/libctru/include/3ds/3dslink.h \
- G:/devkitPro/libctru/include/citro3d.h \
- G:/devkitPro/libctru/include/c3d/types.h \
- G:/devkitPro/libctru/include/c3d/maths.h \
- G:/devkitPro/libctru/include/c3d/mtxstack.h \
- G:/devkitPro/libctru/include/c3d/uniforms.h \
- G:/devkitPro/libctru/include/c3d/attribs.h \
- G:/devkitPro/libctru/include/c3d/buffers.h \
- G:/devkitPro/libctru/include/c3d/base.h \
- G:/devkitPro/libctru/include/c3d/texenv.h \
- G:/devkitPro/libctru/include/c3d/effect.h \
- G:/devkitPro/libctru/include/c3d/texture.h \
- G:/devkitPro/libctru/include/c3d/proctex.h \
- G:/devkitPro/libctru/include/c3d/light.h \
- G:/devkitPro/libctru/include/c3d/lightlut.h \
- G:/devkitPro/libctru/include/c3d/fog.h \
- G:/devkitPro/libctru/include/c3d/framebuffer.h \
- G:/devkitPro/libctru/include/c3d/renderqueue.h
+ G:/devkitPro/libctru/include/3ds/3dslink.h
 G:/devkitPro/libctru/include/3ds.h:
 G:/devkitPro/libctru/include/3ds/types.h:
 G:/devkitPro/libctru/include/3ds/result.h:
@@ -184,20 +167,3 @@ G:/devkitPro/libctru/include/3ds/romfs.h:
 G:/devkitPro/libctru/include/3ds/font.h:
 G:/devkitPro/libctru/include/3ds/gdbhio_dev.h:
 G:/devkitPro/libctru/include/3ds/3dslink.h:
-G:/devkitPro/libctru/include/citro3d.h:
-G:/devkitPro/libctru/include/c3d/types.h:
-G:/devkitPro/libctru/include/c3d/maths.h:
-G:/devkitPro/libctru/include/c3d/mtxstack.h:
-G:/devkitPro/libctru/include/c3d/uniforms.h:
-G:/devkitPro/libctru/include/c3d/attribs.h:
-G:/devkitPro/libctru/include/c3d/buffers.h:
-G:/devkitPro/libctru/include/c3d/base.h:
-G:/devkitPro/libctru/include/c3d/texenv.h:
-G:/devkitPro/libctru/include/c3d/effect.h:
-G:/devkitPro/libctru/include/c3d/texture.h:
-G:/devkitPro/libctru/include/c3d/proctex.h:
-G:/devkitPro/libctru/include/c3d/light.h:
-G:/devkitPro/libctru/include/c3d/lightlut.h:
-G:/devkitPro/libctru/include/c3d/fog.h:
-G:/devkitPro/libctru/include/c3d/framebuffer.h:
-G:/devkitPro/libctru/include/c3d/renderqueue.h:
