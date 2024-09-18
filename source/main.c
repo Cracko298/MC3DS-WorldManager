@@ -303,8 +303,7 @@ void clearDirectory(const char* path) {
     }
 }
 
-
-int main() {
+void fwoOption() {
     gfxInitDefault();
     consoleInit(GFX_TOP, NULL);
     srvInit();
@@ -402,6 +401,18 @@ int main() {
             }
         }
     }
+    return;
+}
+
+
+int main() {
+    gfxInitDefault();
+    consoleInit(GFX_TOP, NULL);
+    srvInit();
+    fsInit();
+    int citraVarCheck = 0;
+
+    fwoOption(); // DO choices here
 
     fsExit();
     gfxExit();
