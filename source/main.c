@@ -308,7 +308,7 @@ void fwoOption() {
     consoleInit(GFX_TOP, NULL);
     srvInit();
     fsInit();
-    int citraVarCheck = 0;
+    int citraVarCheck = citraCheck();
 
     createDirectoryRecursive("sdmc:/Minecraft 3DS/worlds");
 
@@ -410,7 +410,6 @@ int main() {
     consoleInit(GFX_TOP, NULL);
     srvInit();
     fsInit();
-    int citraVarCheck = 0;
 
     fwoOption(); // DO choices here
 
