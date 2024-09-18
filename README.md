@@ -11,3 +11,12 @@
 ```
 .\make
 ```
+
+## Current Feature(s):
+- Convert Worlds to Mario FWO, requires no DLC.
+- Direct Compatibaility with MC3DS UniStore.
+
+## Planned Feature(s):
+- Extract/Import Worlds into ExtData for USA/EUR/JPN.
+- Package Worlds as FWO (From ExtData), or from SDMC.
+- 
