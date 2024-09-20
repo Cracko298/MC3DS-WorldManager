@@ -11,6 +11,9 @@ char* regionOptions[] = {"USA", "EUR", "JPN"};
 char* regionCodes[] = {"00040000001B8700", "000400000017CA00", "000400000017FD00"};
 char selectedRegionCode[17];
 
+#define TITLE_ID 0x00040000001B8700
+#define DEST_FOLDER "sdmc:/Minecraft 3DS/worlds/"
+
 void selectRegion() {
     consoleClear();
     printf("Select Region:\n");
@@ -19,6 +22,7 @@ void selectRegion() {
     while (1) {
         hidScanInput();
         u32 kDown = hidKeysDown();
+        aptMainLoop();
 
         if (kDown & KEY_DOWN) {
             choice = (choice + 1) % 3;
@@ -76,6 +80,7 @@ void selectFolder(char folderNames[20][256], int folderCount, char selectedFolde
     while (1) {
         hidScanInput();
         u32 kDown = hidKeysDown();
+        aptMainLoop();
 
         if (kDown & KEY_DOWN) {
             choice = (choice + 1) % folderCount;
@@ -309,6 +314,7 @@ void fwoOption() {
     srvInit();
     fsInit();
     int citraVarCheck = citraCheck();
+    consoleClear();
 
     createDirectoryRecursive("sdmc:/Minecraft 3DS/worlds");
 
@@ -404,14 +410,74 @@ void fwoOption() {
     return;
 }
 
+Result copyExtSaveData(u64 titleId, const char* sdmcPath) {
+    FS_Archive extdata_archive;
+    FS_Path archivePath = fsMakePath(PATH_BINARY, (u8*)&titleId);
+
+    Result res = FSUSER_OpenArchive(&extdata_archive, ARCHIVE_EXTDATA, archivePath);
+    if (R_FAILED(res)) {
+        return res;
+    }
+
+    FS_Path extdataPath = fsMakePath(PATH_ASCII, "/");
+    Handle dirHandle;
+    res = FSUSER_OpenDirectory(&dirHandle, extdata_archive, extdataPath);
+    if (R_FAILED(res)) {
+        FSUSER_CloseArchive(extdata_archive);
+        return res;
+    }
+
+    FS_DirectoryEntry entry;
+    u32 entriesRead;
+    while (true) {
+        res = FSDIR_Read(dirHandle, &entriesRead, 1, &entry);
+        if (R_FAILED(res) || entriesRead == 0) break;
+
+        FS_Path filePath = fsMakePath(PATH_ASCII, entry.name);
+        Handle fileHandle;
+        res = FSUSER_OpenFile(&fileHandle, extdata_archive, filePath, FS_OPEN_READ, 0);
+        if (R_FAILED(res)) continue;
+
+        u64 fileSize;
+        FSFILE_GetSize(fileHandle, &fileSize);
+        u8* buffer = (u8*)malloc(fileSize);
+        u32 bytesRead;
+        FSFILE_Read(fileHandle, &bytesRead, 0, buffer, fileSize);
+
+        FS_Path sdmcFilePath = fsMakePath(PATH_ASCII, sdmcPath);
+        Handle sdmcFileHandle;
+        res = FSUSER_OpenFile(&sdmcFileHandle, ARCHIVE_SDMC, sdmcFilePath, FS_OPEN_WRITE | FS_OPEN_CREATE, 0);
+        if (R_SUCCEEDED(res)) {
+            u32 bytesWritten;
+            FSFILE_Write(sdmcFileHandle, &bytesWritten, 0, buffer, fileSize, FS_WRITE_FLUSH);
+            FSFILE_Close(sdmcFileHandle);
+        }
+
+        free(buffer);
+        FSFILE_Close(fileHandle);
+    }
+    FSDIR_Close(dirHandle);
+    FSUSER_CloseArchive(extdata_archive);
+
+    return res;
+}
 
 int main() {
     gfxInitDefault();
     consoleInit(GFX_TOP, NULL);
     srvInit();
     fsInit();
+    amInit();
 
-    fwoOption(); // DO choices here
+    u64 extSaveId = 0x00001b87;
+    const char* sdmcPath = "sdmc:/Minecraft 3DS/worlds";
+
+    Result res = copyExtSaveData(extSaveId, sdmcPath);
+    if (R_FAILED(res)) {
+        printf("Failed 0x%08lX\n", res);
+        svcSleepThread(5000000000);
+        fwoOption();
+    }
 
     fsExit();
     gfxExit();
