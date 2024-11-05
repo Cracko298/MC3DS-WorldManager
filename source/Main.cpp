@@ -11,12 +11,9 @@
 
 static const char* regionOptions[] = {"USA", "EUR", "JPN"};
 static const char* regionCodes[] = {"00040000001B8700", "000400000017CA00", "000400000017FD00"};
-static constexpr uint32_t extCodes[] = {0x00001B87,0x000017CA,0x000017FD};
-static const std::u16string extMounts[] = {u"0x00001b87",u"0x000017ca",u"0x000017fd"};
+static constexpr uint32_t SharedArchives[] = {0x00001B87,0x000017CA,0x000017FD};
+static const std::u16string SharedMountPoints[] = {u"0x00001b87",u"0x000017ca",u"0x000017fd"};
 char selectedRegionCode[17];
-
-#define TITLE_ID 0x00040000001B8700
-#define DEST_FOLDER "sdmc:/Minecraft 3DS/worlds/"
 
 void selectRegion() {
     consoleClear();
@@ -323,7 +320,7 @@ void fwoOption() {
     consoleInit(GFX_TOP, NULL);
     srvInit();
     fsInit();
-    int citraVarCheck = citraCheck();
+    int citraVarCheck = 0;
     consoleClear();
 
     createDirectoryRecursive("sdmc:/Minecraft 3DS/worlds");
@@ -436,6 +433,44 @@ int main() {
         exit(-1);
         return -1;
     }
+    printf("Opening and printing shared extdata archives: \n");
+    for (int i = 0; i < 3; i++)
+    {
+        // Since I'm testing, none of these are going to be closed after reading. FsLib should clean that up itself.
+        if (!FsLib::OpenExtData(SharedMountPoints[i], SharedArchives[i]))
+        {
+            printf("Failed to open shared archive %08lX: %s.\n", SharedArchives[i], FsLib::GetErrorString());
+            continue;
+        }
+
+        printf("Opened shared archive %08lX: ", SharedArchives[i]);
+
+        // Need to make this a path FsLib can read correctly.
+        std::u16string ArchivePath = SharedMountPoints[i] + u":/";
+        FsLib::Directory SharedDirectory(ArchivePath);
+        if (!SharedDirectory.IsOpen())
+        {
+            printf("Failed to open directory!\n");
+            continue;
+        }
+
+        // Print the listing.
+        printf("\n");
+        for (int i = 0; i < static_cast<int>(SharedDirectory.GetEntryCount()); i++)
+        {
+            if (SharedDirectory.EntryAtIsDirectory(i))
+            {
+                printf("\tDIR %s\n", SharedDirectory.GetEntryPathAtAsUTF8(i).c_str());
+            }
+            else
+            {
+                printf("\tFIL %s\n", SharedDirectory.GetEntryPathAtAsUTF8(i).c_str());
+            }
+        }
+        // Add an exta line here cause 3DS screen is really cramped.
+        printf("\n");
+    }
+    svcSleepThread(250000000000000);
 
     fwoOption(); //change this later sometime. probably saturday.
 
