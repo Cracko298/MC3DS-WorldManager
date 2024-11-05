@@ -9,8 +9,10 @@
 #include <unistd.h>
 #include <FsLib.hpp>
 
-char* regionOptions[] = {"USA", "EUR", "JPN"};
-char* regionCodes[] = {"00040000001B8700", "000400000017CA00", "000400000017FD00"};
+static const char* regionOptions[] = {"USA", "EUR", "JPN"};
+static const char* regionCodes[] = {"00040000001B8700", "000400000017CA00", "000400000017FD00"};
+static constexpr uint32_t extCodes[] = {0x00001B87,0x000017CA,0x000017FD};
+static const std::u16string extMounts[] = {u"0x00001b87",u"0x000017ca",u"0x000017fd"};
 char selectedRegionCode[17];
 
 #define TITLE_ID 0x00040000001B8700
@@ -210,7 +212,13 @@ void createDirectoryRecursive(const char* path) {
 
 int citraCheck() {
     struct stat st;
-    if (stat("sdmc:/Nintendo 3DS/00000000000000000000000000000000", &st) == 0 && S_ISDIR(st.st_mode)) {
+    if (stat("sdmc:/Nintendo 3DS", &st) != 0 || !S_ISDIR(st.st_mode)) {
+        consoleClear();
+        svcSleepThread(1000000);
+        return 1;
+    }
+
+    if (stat("sdmc:/Nintendo 3DS/00000000000000000000000000000000", &st) != 1 || !S_ISDIR(st.st_mode)) {
         consoleClear();
         svcSleepThread(1000000);
         return 1;
@@ -418,17 +426,20 @@ int main() {
     srvInit();
     fsInit();
     amInit();
-
     if (!FsLib::Initialize())
     {
         printf("%s\n", FsLib::GetErrorString());
+        FsLib::Exit();
+        fsExit();
+        gfxExit();
+        aptExit();
+        exit(-1);
         return -1;
     }
 
-    u64 extSaveId = 0x00001b87;
-    fwoOption();
+    fwoOption(); //change this later sometime. probably saturday.
 
-
+    FsLib::Exit();
     fsExit();
     gfxExit();
     aptExit();
