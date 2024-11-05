@@ -9,7 +9,8 @@
 - Fast, simple, and Easy-to-use.
 
 ## Building:
-- Build using devkitpro with libctru alongside MinGW and the standard C/C++ Libraries.
+- Build using `devkitpro` with `libctru` alongside `MinGW` and the standard C/C++ Libraries.
+- Now also requires you too have compiled and placed `FSLib` inside of `libctru` or the `devKitPro` directory.
 ```
 .\make
 ```
