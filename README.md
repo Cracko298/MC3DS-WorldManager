@@ -1,5 +1,5 @@
 # MC3DS WorldManager:
-### Previously: <ins>3DSWorld2FWO_Console</ins>
+### Previously Called: <ins>3DSWorld2FWO_Console</ins>
 - A WIP World Manager for MC3DS.
 
 ## Reasoning:
