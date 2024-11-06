@@ -1,6 +1,6 @@
 # MC3DS WorldManager:
 ### Previously Called: <ins>3DSWorld2FWO_Console</ins>
-- A WIP World Manager for MC3DS.
+- A WIP World Manager for MC3DS using JK's FsLib.
 
 ![image](https://github.com/user-attachments/assets/d3dc457c-8384-452f-ac86-4402fcd974cf)
 
