@@ -1,0 +1,9 @@
+.vscode/
+build/
+.clang-format
+.clang-tidy
+.editorconfig
+*.elf
+*.3dsx
+*.smdh
+*.lst

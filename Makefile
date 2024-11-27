@@ -33,7 +33,7 @@ NAME := 3DSWorld2FWO_Console
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	mc3dsfwo
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
