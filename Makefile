@@ -9,8 +9,6 @@ endif
 TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
 
-NAME := 3DSWorld2FWO_Console
-
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
@@ -33,18 +31,17 @@ NAME := 3DSWorld2FWO_Console
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
-BUILD		:=	build
-SOURCES		:=	source
-DATA		:=	data
-INCLUDES	:=	include
-GRAPHICS	:=	gfx
-GFXBUILD	:=	$(BUILD)
-APP_AUTHOR  := Cracko298
-ICON := icon.png
+TARGET			:=	mc3dsfwo
+BUILD			:=	build
+SOURCES			:=	source
+#DATA			:=	data
+INCLUDES		:=	include
+#GRAPHICS		:=	gfx
+#GFXBUILD		:=	$(BUILD)
+APP_AUTHOR  	:= Cracko298
+#ICON 			:= icon.png
 APP_DESCRIPTION := Enables Converting Worlds to FWO Worlds.
-APP_NAME := 3DSWorld2FWO_Console
-LIBS	:= -lctru -lfslib
+APP_TITLE 		:= 3DSWorld2FWO_Console
 #ROMFS		:=	romfs
 #GFXBUILD	:=	$(ROMFS)/gfx
 
@@ -64,7 +61,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lctru -lfslib -lm
+LIBS	:= -lctru -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -164,6 +161,9 @@ endif
 ifneq ($(ROMFS),)
 	export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
 endif
+
+.PHONY: all clean
+
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
