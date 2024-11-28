@@ -1,19 +1,39 @@
 #include <3ds.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <dirent.h>
-#include <array>
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <FsLib.hpp>
 
 static const char* regionOptions[] = {"USA", "EUR", "JPN"};
 static const char* regionCodes[] = {"00040000001B8700", "000400000017CA00", "000400000017FD00"};
-static constexpr uint32_t SharedArchives[] = {0x00001B87,0x000017CA,0x000017FD};
-static const std::u16string SharedMountPoints[] = {u"0x00001b87",u"0x000017ca",u"0x000017fd"};
+static const uint32_t archiveIDs[] = {0x00001B87,0x000017CA,0x000017FD};
+// Change this to whatever you want. Just remember paths need to start with "[whatever is here]:/"
+static const char *archiveMountPoint = "mc";
 char selectedRegionCode[17];
+
+/*
+    This uses ctrulib's built in archive_dev. This didn't exist back in the day, so I don't know how well it will work.
+    I'm going to be straight up honest though: I don't know who wrote it or when, but I'm not a fan of the code.
+    I don't know for sure, but I think an issue might arise trying to use this. I just have a hunch. Reading from extdata should be fine,
+    but writing it might have issues.
+*/
+bool mountExtData(uint32_t archiveID)
+{
+    uint32_t binaryData[] = {MEDIATYPE_SD, archiveID, 0x00000000};
+    FS_Path pathData = {PATH_BINARY, 0x0C, binaryData};
+
+    Result archiveError = archiveMount(ARCHIVE_EXTDATA, pathData, archiveMountPoint);
+    if(R_FAILED(archiveError))
+    {
+        printf("Error opening archive: 0x%08lX.\n", archiveError);
+        return false;
+    }
+    return true;
+}
 
 void selectRegion() {
     consoleClear();
@@ -422,61 +442,55 @@ int main() {
     consoleInit(GFX_TOP, NULL);
     srvInit();
     fsInit();
+    aptInit();
     amInit();
-    if (!FsLib::Initialize())
-    {
-        printf("%s\n", FsLib::GetErrorString());
-        FsLib::Exit();
-        fsExit();
-        gfxExit();
-        aptExit();
-        exit(-1);
-        return -1;
+    hidInit();
+    // This will mount the NA version of minecraft and I assume assign it to mc:/?
+    if(!mountExtData(archiveIDs[0])) {
+        // The mount function will print what went wrong.
+        return -2;
     }
-    printf("Opening and printing shared extdata archives: \n");
-    for (int i = 0; i < 3; i++)
+
+    // This is just a test to make sure this worked.
+    DIR *mcRoot = opendir("mc:/");
+    if(!mcRoot)
     {
-        // Since I'm testing, none of these are going to be closed after reading. FsLib should clean that up itself.
-        if (!FsLib::OpenExtData(SharedMountPoints[i], SharedArchives[i]))
-        {
-            printf("Failed to open shared archive %08lX: %s.\n", SharedArchives[i], FsLib::GetErrorString());
-            continue;
-        }
-
-        printf("Opened shared archive %08lX: ", SharedArchives[i]);
-
-        // Need to make this a path FsLib can read correctly.
-        std::u16string ArchivePath = SharedMountPoints[i] + u":/";
-        FsLib::Directory SharedDirectory(ArchivePath);
-        if (!SharedDirectory.IsOpen())
-        {
-            printf("Failed to open directory!\n");
-            continue;
-        }
-
-        // Print the listing.
-        printf("\n");
-        for (int i = 0; i < static_cast<int>(SharedDirectory.GetEntryCount()); i++)
-        {
-            if (SharedDirectory.EntryAtIsDirectory(i))
-            {
-                printf("\tDIR %s\n", SharedDirectory.GetEntryPathAtAsUTF8(i).c_str());
-            }
-            else
-            {
-                printf("\tFIL %s\n", SharedDirectory.GetEntryPathAtAsUTF8(i).c_str());
-            }
-        }
-        // Add an exta line here cause 3DS screen is really cramped.
-        printf("\n");
+        printf("Error opening Minecraft root!\n");
+        return -3;
     }
-    svcSleepThread(250000000000000);
+    
+    printf("Listing Minecraft ExtData root: \n");
+    // Loop and print root listing.
+    struct dirent *currentEnt = NULL;
+    while ((currentEnt = readdir(mcRoot)))
+    {
+        printf("\tmc:/%s\n", currentEnt->d_name);
+    }
+    printf("End\nPress start to exit.\n");
+    closedir(mcRoot);
 
-    fwoOption(); //change this later sometime. probably saturday.
+    // aptMainLoop allows the homebutton to work. Just an FYI.
+    while(aptMainLoop()) {
+        hidScanInput();
 
-    FsLib::Exit();
+        // This will break this loop once start is pressed.
+        if(hidKeysDown() & KEY_START) {
+            break;
+        }
+        // This will flip the buffer to screen and wait for Vsync.
+        gfxFlushBuffers();
+        gfxSwapBuffers();
+        gspWaitForVBlank();
+    }
+
+    // fwoOption(); //change this later sometime. probably saturday.
+
+    // I'm assuming this loops through everything and closes it?
+    archiveUnmountAll();
+    hidExit();
     fsExit();
     gfxExit();
     aptExit();
+    amExit();
     return 0;
 }
